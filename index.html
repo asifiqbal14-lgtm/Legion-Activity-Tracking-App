@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Legion Tracker — B8 Installable App</title>
+<title>Legion Tracker — B9 Daily Tasks Contrast</title>
 <link rel="manifest" href="./legion-manifest.json">
 <meta name="theme-color" content="#1d4ed8">
 <link rel="icon" href="legion-icon-192.png">
@@ -672,6 +672,22 @@ main>*{flex:none}
 </style>
 
 
+<style id="daily-task-contrast-b9">
+
+/* B9 Daily Tasks-only readability: black, extra-bold button labels. */
+#view .daily-task-view .tg,
+#view .daily-task-view .tg.on {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  font-weight: 900 !important;
+  text-shadow: none !important;
+}
+#view .daily-task-view .tg:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+</style>
+
 <style id="five-theme-switcher">
 html[data-theme="light"]{
   --bg:#edf4fc;--panel:#ffffff;--panel2:#f6f9fe;--line:#d9e5f3;--text:#172b46;--muted:#667d99;--accent:#2563eb;--red-bg:#fff0f3;--green-bg:#eafff1;--input-bg:#ffffff;
@@ -1071,11 +1087,11 @@ function vDaily(){
   const lab=k=>DAILY.find(d=>d[0]===k)[1];
   const span=g=>g.cols.length+(g.all?1:0);
   let h=`<p class="hint">Click a button to flip it: <b style="color:#ff9a9a">red = not done</b> → <b style="color:#7dffa8">green = done</b>. Click again to undo. Each group has its own “All” button that marks every activity of that group.</p>
-  <div class="wrap"><table><thead><tr><th rowspan="2">Player</th>${DAILY_GROUPS.map(g=>`<th colspan="${span(g)}" style="background:${g.color};color:#10131a;text-align:left"><span style="position:sticky;left:calc(var(--namew,110px) + 10px);display:inline-block;white-space:nowrap">${g.label}</span></th>`).join('')}<th rowspan="2">Progress</th></tr>
-  <tr>${DAILY_GROUPS.map(g=>g.cols.map(([k,c])=>`<th style="background:${c};color:#10131a">${lab(k)}</th>`).join('')+(g.all?`<th style="background:${g.color};color:#10131a">All</th>`:'')).join('')}</tr></thead><tbody>`;
+  <div class="wrap daily-task-view"><table><thead><tr><th rowspan="2">Player</th>${DAILY_GROUPS.map(g=>`<th colspan="${span(g)}" style="background:${g.color} !important;color:#10131a !important;text-align:left"><span style="position:sticky;left:calc(var(--namew,110px) + 10px);display:inline-block;white-space:nowrap">${g.label}</span></th>`).join('')}<th rowspan="2">Progress</th></tr>
+  <tr>${DAILY_GROUPS.map(g=>g.cols.map(([k,c])=>`<th style="background:${c} !important;color:#10131a !important">${lab(k)}</th>`).join('')+(g.all?`<th style="background:${g.color} !important;color:#10131a !important">All</th>`:'')).join('')}</tr></thead><tbody>`;
   S.players.forEach((p,i)=>{
     const n=DAILY.filter(([k])=>p.daily[k]).length;
-    h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td>${DAILY_GROUPS.map((g,gi)=>g.cols.map(([k,c])=>`<td style="background:${c}">${tg(p.daily[k],`data-tg="${p.id}|daily|${k}"`)}</td>`).join('')+(g.all?`<td style="background:${g.color}"><button class="tg sm ${g.cols.every(([k])=>p.daily[k])?'on':''}" data-allg="${p.id}|${gi}">All</button></td>`:'')).join('')}
+    h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td>${DAILY_GROUPS.map((g,gi)=>g.cols.map(([k,c])=>`<td style="background:${c} !important">${tg(p.daily[k],`data-tg="${p.id}|daily|${k}"`)}</td>`).join('')+(g.all?`<td style="background:${g.color} !important"><button class="tg sm ${g.cols.every(([k])=>p.daily[k])?'on':''}" data-allg="${p.id}|${gi}">All</button></td>`:'')).join('')}
     <td class="cnt ${n===DAILY.length?'full':''}">${n}/${DAILY.length}</td></tr>`;
   });
   return h+'</tbody></table></div>';

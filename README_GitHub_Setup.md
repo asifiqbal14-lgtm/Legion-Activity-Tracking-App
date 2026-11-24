@@ -1,4 +1,4 @@
-# Legion Tracker B8 — GitHub Pages PWA package
+# Legion Tracker B9 — GitHub Pages PWA package
 
 This package contains the tracker website, modern game-style app icons, PWA manifest, service worker, and installation guidance.
 
@@ -22,7 +22,7 @@ README_GitHub_Setup.md
 ## Publish
 
 1. Extract the ZIP on your computer.
-2. Open the extracted `Legion_Tracker_B8_GitHub_Upload` folder.
+2. Open the extracted `Legion_Tracker_B9_GitHub_Upload` folder.
 3. Select all files INSIDE it and upload them to the repository root (not inside another folder).
 4. Commit the changes to the branch selected by GitHub Pages, normally `main`.
 5. In GitHub, open **Settings → Pages**. Choose **Deploy from a branch**, select `main` and `/(root)`, then save.
@@ -49,7 +49,7 @@ Open the HTTPS Pages URL in Safari → Share → Add to Home Screen → Add.
 - Open the page in Chrome, not an in-app browser.
 - Check GitHub **Actions** or **Settings → Pages** and wait until deployment succeeds.
 - In Chrome, open the Pages URL again, refresh, and allow it to load online once.
-- If an old version is cached, close the site and reopen it. The B8 service worker uses a new cache name.
+- If an old version is cached, close the site and reopen it. The B9 service worker uses a new cache name.
 
 ## Replacing an existing tracker
 
@@ -61,3 +61,6 @@ Open the HTTPS Pages URL in Safari → Share → Add to Home Screen → Add.
 ## Data note
 
 Tracker records are stored locally in the browser on each device. GitHub Pages does not synchronize those records between users or devices automatically.
+
+
+B9 visual update: Daily Tasks buttons now use bold black labels and the Daily Tasks columns use more vibrant colors. These styles are scoped to the Daily Tasks tab only; other tabs are unchanged.
