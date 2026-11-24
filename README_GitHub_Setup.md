@@ -1,39 +1,63 @@
-# Legion Tracker B7 — GitHub Pages Upload
+# Legion Tracker B8 — GitHub Pages PWA package
 
-This folder contains the complete website package. Upload **all files in this folder** to the root of one GitHub repository (not just the HTML file).
+This package contains the tracker website, modern game-style app icons, PWA manifest, service worker, and installation guidance.
 
-## Included files
+## IMPORTANT: Upload the FILES inside this extracted folder
 
-- `index.html` — Legion Tracker B7 application.
-- `legion-manifest.json` — installable web-app manifest.
-- `legion-sw.js` — offline app-shell service worker; the HTML already registers this exact filename.
-- `legion-icon-192.png` and `legion-icon-512.png` — app icons.
-- `legion-icon-maskable-512.png` — Android maskable app icon.
-- `legion-icon-180.png` — Apple touch icon asset.
-- `favicon-32.png` — browser tab icon.
+Do not upload the enclosing folder as one nested directory. Open this folder, select every file inside it, and upload those files to the **root** of your GitHub repository. Your repository root should look like:
 
-## Publish with GitHub Pages
+```
+index.html
+legion-manifest.json
+legion-sw.js
+legion-icon-192.png
+legion-icon-512.png
+legion-icon-maskable-512.png
+legion-icon-180.png
+favicon-32.png
+.nojekyll
+README_GitHub_Setup.md
+```
 
-1. Extract this ZIP on your computer.
-2. Open your GitHub repository, or create a new repository.
-3. Choose **Add file → Upload files**.
-4. Upload every file from this folder, keeping the filenames unchanged and placing them in the repository root.
-5. Commit the upload to the `main` branch.
-6. Open **Settings → Pages** in the repository.
-7. Under **Build and deployment**, select **Deploy from a branch**.
-8. Select branch `main` and folder `/ (root)`, then save.
-9. Wait for GitHub Pages to publish, then open the Pages URL over HTTPS.
+## Publish
 
-## If replacing your existing tracker
+1. Extract the ZIP on your computer.
+2. Open the extracted `Legion_Tracker_B8_GitHub_Upload` folder.
+3. Select all files INSIDE it and upload them to the repository root (not inside another folder).
+4. Commit the changes to the branch selected by GitHub Pages, normally `main`.
+5. In GitHub, open **Settings → Pages**. Choose **Deploy from a branch**, select `main` and `/(root)`, then save.
+6. Wait for the deployment to finish.
+7. Open the actual published GitHub Pages address, which starts with `https://` and usually looks like `https://USERNAME.github.io/REPOSITORY/`. Do not use the `github.com/...` repository page as the app link.
 
-- First export a JSON backup from the current tracker.
-- Replace the site's existing `index.html` and upload/replace the manifest, service worker and icon files with the files in this package.
-- Keep the exact same GitHub Pages site URL (same origin and path) if you want the browser's existing localStorage data to remain available.
-- After publishing, open the site and refresh. If the old version remains visible, close the installed app/browser tab and reopen it; a service-worker update may take one reload.
-- Do not delete browser site data if you need to retain player records.
+## Install on Android
 
-## Important notes
+1. Open the published HTTPS Pages URL directly in **Google Chrome**. Do not open it inside WhatsApp, Facebook, Gmail, or the GitHub app's built-in browser.
+2. Wait for the page to finish loading while online. The app registers its service worker in the background.
+3. Tap the green **Install App** button in the tracker header.
+4. If Chrome provides its native install prompt, confirm it. If no native prompt is available yet, the button opens step-by-step instructions: Chrome menu `⋮` → **Install app** or **Add to Home screen**.
 
-- The app stores its tracker data in the browser on the device. A GitHub upload does not automatically synchronize player data between different devices or browsers.
-- The service worker provides an offline app shell after the first successful online load. Features that require internet access (such as calendar-image OCR if used by the app) may still need a connection.
-- GitHub Pages must be served over HTTPS for PWA installation and service workers.
+Chrome controls when it offers the native prompt. The app cannot force a prompt to appear if Chrome does not consider the site installable, if it is already installed, or if it is opened in an unsupported in-app browser. The manual Chrome menu option is the fallback.
+
+## iPhone
+
+Open the HTTPS Pages URL in Safari → Share → Add to Home Screen → Add.
+
+## If Install App is still unavailable
+
+- Confirm that the URL is the published `https://USERNAME.github.io/...` Pages site, not the GitHub repository page.
+- Confirm `index.html`, `legion-manifest.json`, `legion-sw.js`, and all icon PNGs are in the repository root (or all in the exact same published subfolder if Pages is configured to publish that folder).
+- Open the page in Chrome, not an in-app browser.
+- Check GitHub **Actions** or **Settings → Pages** and wait until deployment succeeds.
+- In Chrome, open the Pages URL again, refresh, and allow it to load online once.
+- If an old version is cached, close the site and reopen it. The B8 service worker uses a new cache name.
+
+## Replacing an existing tracker
+
+1. Export a JSON backup from the current tracker first.
+2. Replace the existing website files with the files from this package.
+3. Keep the same GitHub Pages origin/path if you want the browser's existing localStorage records to remain available.
+4. Do not clear browser site data if you need to preserve player records.
+
+## Data note
+
+Tracker records are stored locally in the browser on each device. GitHub Pages does not synchronize those records between users or devices automatically.
