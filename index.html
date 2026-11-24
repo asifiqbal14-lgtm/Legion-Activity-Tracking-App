@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Legion Tracker — B9 Daily Tasks Contrast</title>
+<title>Legion Tracker — B10 Pilot Management Update</title>
 <link rel="manifest" href="./legion-manifest.json">
 <meta name="theme-color" content="#1d4ed8">
 <link rel="icon" href="legion-icon-192.png">
@@ -1403,7 +1403,7 @@ const EVO={
  R:{unlock:{shards:30},steps:[{badges:30},{badges:60},{badges:120,shards:45},{badges:180,shards:90},{badges:300,shards:135,blue:200},{badges:900,shards:180,blue:400},{badges:1350,purple:900,blue:800}]}
 };
 const UPG={
- SR:[['gBasic',50],['gBasic',100],['gStd',50],['gStd',100],['gAdv',50],['gAdv',100],['gExp',50],['gExp',100],['gExp',125],['gExp',150]],
+ SR:[['gBasic',50],['gBasic',100],['gStd',50],['gStd',100],['gAdv',50],['gAdv',100],['gAdv',200],['gExp',100],['gExp',125],['gExp',150]],
  R:[['gBasic',50],['gBasic',100],['gStd',50],['gStd',100],['gAdv',50],['gAdv',100],['gAdv',200],['gExp',100],['gExp',125],['gExp',150]]
 };
 const RESN={badges:'Pilot Badges',gold:'Golden Pieces',purple:'Purple Pieces',blue:'Blue Pieces',shards:'Pilot Shards',gBasic:'Basic Guides',gStd:'Standard Guides',gAdv:'Advanced Guides',gExp:'Expert Guides'};
@@ -1412,12 +1412,12 @@ const nz=v=>(+v||0);
 function getPms(pid){
   let m=S.pms[pid];
   if(!m){
-    m=S.pms[pid]={inv:{badges:0,gold:0,purple:0,blue:0,gBasic:0,gStd:0,gAdv:0,gExp:0,selSR:0,selR:0,selN:0},p:{}};
+    m=S.pms[pid]={inv:{badges:0,gold:0,purple:0,blue:0,gBasic:0,gStd:0,gAdv:0,gExp:0,srChest:0,selSR:0,selR:0,selN:0},p:{}};
     const pl=P(pid);
     if(pl&&/maverick/i.test(pl.name))PILOTS.forEach(a=>{m.p[a[0]]={s:a[4],st:a[5],up:a[6]}});
   }
   if(!m.inv)m.inv={};
-  Object.keys({badges:1,gold:1,purple:1,blue:1,gBasic:1,gStd:1,gAdv:1,gExp:1,selSR:1,selR:1,selN:1}).forEach(k=>{if(m.inv[k]==null)m.inv[k]=0});
+  Object.keys({badges:1,gold:1,purple:1,blue:1,gBasic:1,gStd:1,gAdv:1,gExp:1,srChest:1,selSR:1,selR:1,selN:1}).forEach(k=>{if(m.inv[k]==null)m.inv[k]=0});
   if(!m.p)m.p={};
   return m;
 }
@@ -1427,11 +1427,17 @@ function evoNeed(a,st){ // returns [[res,need]] or null (maxed / no data)
   const o=st<0?E.unlock:E.steps[st];return Object.entries(o);
 }
 function upNeed(a,up){const U=UPG[a[1]];if(!U||up>=10)return null;return [U[up]]}
-function resHave(m,s,k){return k==='shards'?nz(s.s):nz(m.inv[k])}
-function prog(m,s,need){
+function resHave(m,s,k,rarity){
+  if(k!=='shards')return nz(m.inv[k]);
+  const own=nz(s.s);
+  if(rarity==='SR')return own+nz(m.inv.selSR)+(nz(m.inv.srChest)*5);
+  if(rarity==='R'||rarity==='N')return own+nz(m.inv['sel'+rarity]);
+  return own;
+}
+function prog(m,s,need,rarity){
   if(!need||!need.length)return null;
   let sum=0,ok=true;
-  need.forEach(([k,n])=>{const h=resHave(m,s,k);sum+=Math.min(1,h/n);if(h<n)ok=false});
+  need.forEach(([k,n])=>{const h=resHave(m,s,k,rarity);sum+=Math.min(1,h/n);if(h<n)ok=false});
   return {pct:sum/need.length,ok};
 }
 function pbar(p,label,cls){
@@ -1441,7 +1447,7 @@ function pbar(p,label,cls){
 }
 function starTxt(st){return st>=7?'🌟 Awakened':st<0?'🔒 Locked':'★'.repeat(st)+'☆'.repeat(6-st)}
 function pmsRows(m){
-  return PILOTS.map(a=>{const s=pst(m,a);return {a,s,evo:prog(m,s,evoNeed(a,s.st)),upg:prog(m,s,upNeed(a,s.up))}});
+  return PILOTS.map(a=>{const s=pst(m,a);return {a,s,evo:prog(m,s,evoNeed(a,s.st),a[1]),upg:prog(m,s,upNeed(a,s.up),a[1])}});
 }
 function pmsTop(m){
   const rows=pmsRows(m);
@@ -1450,26 +1456,26 @@ function pmsTop(m){
     return `<div class="icard" style="--bc:${key==='evo'?'#38bdf8':'#f472b6'}"><h4>${title}</h4>${l.length?l.map(r=>`<button class="r-${r.a[1]}" data-pmssel="${esc(r.a[0])}" style="border-color:var(--bc)"><b>${esc(r.a[0])}</b> <span class="rar">${r.a[1]}</span> <small style="display:inline">${key==='evo'?starTxt(r.s.st)+' → next':'Lv '+r.s.up+' → '+(r.s.up+1)}</small>${pbar(r[key],'',cls)}</button>`).join(''):'<small>No data</small>'}</div>`};
   return `<div class="top5">${mk('evo','⭐ Closest to EVOLVE','')}${mk('upg','⬆ Closest to UPGRADE','up')}</div>`;
 }
-function needList(m,s,need){
+function needList(m,s,need,rarity){
   if(!need)return '<small>Nothing further to spend (maxed, or no cost data for this rarity).</small>';
-  return need.map(([k,n])=>{const h=resHave(m,s,k);return `<div class="need"><span>${RESN[k]}</span><b class="${h>=n?'ok':'no'}">${h.toLocaleString()} / ${n.toLocaleString()}</b></div>`+pbar({pct:Math.min(1,h/n),ok:h>=n},'')}).join('');
+  return need.map(([k,n])=>{const h=resHave(m,s,k,rarity),label=(k==='shards'&&rarity==='SR')?'Pilot Shards (owned + SR selectable)':RESN[k];return `<div class="need"><span>${label}</span><b class="${h>=n?'ok':'no'}">${h.toLocaleString()} / ${n.toLocaleString()}</b></div>`+pbar({pct:Math.min(1,h/n),ok:h>=n},'')}).join('');
 }
 function pmsDetail(m){
   const a=PILOTS.find(x=>x[0]===pmsSel);if(!a)return '<div id="pmsDet"></div>';
-  const s=pst(m,a),en=evoNeed(a,s.st),un=upNeed(a,s.up),ep=prog(m,s,en),up=prog(m,s,un);
-  const sel=a[1]==='SSR'?0:nz(m.inv['sel'+a[1]]);
+  const s=pst(m,a),en=evoNeed(a,s.st),un=upNeed(a,s.up),ep=prog(m,s,en,a[1]),up=prog(m,s,un,a[1]);
+  const sel=a[1]==='SR'?(nz(m.inv.selSR)+nz(m.inv.srChest)*5):nz(m.inv['sel'+a[1]]);
   const stOpts=[-1,0,1,2,3,4,5,6,7].map(v=>`<option value="${v}" ${v===s.st?'selected':''}>${v<0?'🔒 Locked':v>=7?'🌟 Awakened':v+' ★'}</option>`).join('');
   const lvOpts=[0,1,2,3,4,5,6,7,8,9,10].map(v=>`<option value="${v}" ${v===s.up?'selected':''}>Lv ${v}</option>`).join('');
   const evoLbl=en?(s.st<0?'Unlock':s.st>=6?'Awakening':'Evolve to '+(s.st+1)+' ★'):'';
   return `<div id="pmsDet" class="pdet r-${a[1]}"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><div><b style="font-size:18px">${esc(a[0])}</b> <span class="rar" style="background:var(--bc)">${a[1]}</span><br><small style="color:var(--muted)">${esc(a[2])} · ${esc(a[3])}</small></div>
    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><select data-pmsst="${esc(a[0])}">${stOpts}</select><select data-pmslv="${esc(a[0])}">${lvOpts}</select><button data-pmsclose="1">✕ Close</button></div></div>
    <div class="cols" style="margin-top:10px">
-    <div><b>⭐ Evolve${en?' – next: '+evoLbl:''}</b><div style="margin:4px 0">${starTxt(s.st)}</div>${needList(m,s,en)}
+    <div><b>⭐ Evolve${en?' – next: '+evoLbl:''}</b><div style="margin:4px 0">${starTxt(s.st)}</div>${needList(m,s,en,a[1])}
       ${en?`<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn-accent" data-pmsdo="evo" ${ep&&ep.ok?'':'disabled'}>${evoLbl} now</button></div>`:''}</div>
-    <div><b>⬆ Upgrade${un?' – next: Lv '+(s.up+1):''}</b><div style="margin:4px 0">Level ${s.up} / 10</div>${needList(m,s,un)}
+    <div><b>⬆ Upgrade${un?' – next: Lv '+(s.up+1):''}</b><div style="margin:4px 0">Level ${s.up} / 10</div>${needList(m,s,un,a[1])}
       ${un?`<div style="margin-top:8px"><button class="btn-accent" data-pmsdo="upg" ${up&&up.ok?'':'disabled'}>Upgrade to Lv ${s.up+1} now</button></div>`:''}</div>
    </div>
-   ${a[1]!=='SSR'?`<div style="margin-top:10px"><small>Selectable ${a[1]} shards in stock: <b>${sel}</b></small> <button data-pmsuse="1" ${sel>0?'':'disabled'}>Use selectable shards → ${esc(a[0])}</button> <input id="pmsUseQty" data-num="1" type="text" inputmode="decimal" placeholder="qty" style="width:70px"></div>`:''}
+   ${a[1]==='SR'?`<div style="margin-top:12px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)"><b>🧩 SR Selectable Shards</b><div style="margin:4px 0 8px"><small>Available: <b>${sel}</b> shards · ${nz(m.inv.selSR)} loose + ${nz(m.inv.srChest)} chests × 5</small></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><input id="pmsUseQty" data-num="1" type="text" inputmode="decimal" placeholder="shards to use" style="width:120px"><button data-pmsuse="1" ${sel>0?'':'disabled'}>Use SR shards → ${esc(a[0])}</button></div><small>Each chest supplies 5 shards. The calculator automatically includes unopened chests in SR evolve readiness.</small></div>`:''}
    </div>`;
 }
 function vPms(){
@@ -1479,9 +1485,8 @@ function vPms(){
   let h=`<div class="calc"><b>Player:</b> <select id="pmsPlayer" style="min-width:170px">${S.players.map((q,i)=>`<option value="${q.id}" ${q.id===pmsPid?'selected':''}>#${i+1} ${esc(q.name)}</option>`).join('')}</select>
    <span style="color:var(--muted);font-size:12.5px">Pilot shards & inventory below belong to this player only.</span></div>
    <div class="pms-inv">
-    <div class="icard" style="--bc:#facc15"><h4>🎖 Pilot Badges</h4>${I('badges','Badges')}</div>
+    <div class="icard" style="--bc:#facc15"><h4>🎖 Pilot Badges & SR Selectable</h4>${I('badges','Badges')}${I('srChest','SR Selectable Shard Chests (5 shards each)')}</div>
     <div class="icard" style="--bc:#c084fc"><h4>💎 Pieces</h4>${I('gold','🟡 Golden')}${I('purple','🟣 Purple')}${I('blue','🔵 Blue')}</div>
-    <div class="icard" style="--bc:#f472b6"><h4>🧩 Selectable Pilot Shards</h4>${I('selSR','SR selectable')}${I('selR','R selectable')}${I('selN','N selectable')}</div>
     <div class="icard" style="--bc:#4ade80"><h4>📘 Training Guides</h4>${GUIDE.map(g=>I(g[0],g[1])).join('')}</div>
    </div>
    <div id="pmsTopBox">${pmsTop(m)}</div><div id="pmsDetBox">${pmsDetail(m)}</div>`;
@@ -1504,15 +1509,31 @@ function pmsRefresh(){
   const m=getPms(pmsPid),t=document.getElementById('pmsTopBox'),d=document.getElementById('pmsDetBox');
   if(t)t.innerHTML=pmsTop(m);if(d)d.innerHTML=pmsDetail(m);
   document.querySelectorAll('.pcard').forEach(c=>{const a=PILOTS.find(x=>x[0]===c.dataset.key),s=pst(m,a),b=c.querySelector('.pbars');
-    if(b)b.innerHTML=pbar(prog(m,s,evoNeed(a,s.st)),'Evolve','')+pbar(prog(m,s,upNeed(a,s.up)),'Upgrade','up')});
+    if(b)b.innerHTML=pbar(prog(m,s,evoNeed(a,s.st),a[1]),'Evolve','')+pbar(prog(m,s,upNeed(a,s.up),a[1]),'Upgrade','up')});
+}
+function spendPilotShards(m,s,a,amount){
+  let left=amount;
+  const own=Math.min(left,nz(s.s));s.s=nz(s.s)-own;left-=own;
+  if(left<=0)return;
+  const key='sel'+a[1];
+  const loose=Math.min(left,nz(m.inv[key]));m.inv[key]=nz(m.inv[key])-loose;left-=loose;
+  if(left<=0)return;
+  if(a[1]==='SR'){
+    const chestCount=Math.ceil(left/5);
+    if(chestCount>nz(m.inv.srChest))throw new Error('SR selectable chests changed while spending');
+    m.inv.srChest=nz(m.inv.srChest)-chestCount;
+    m.inv.selSR=nz(m.inv.selSR)+(chestCount*5-left);
+    left=0;
+  }
+  if(left>0)throw new Error('Not enough selectable shards');
 }
 function pmsAct(kind){
   const a=PILOTS.find(x=>x[0]===pmsSel);if(!a)return;const m=getPms(pmsPid),s=pst(m,a);
-  const need=kind==='evo'?evoNeed(a,s.st):upNeed(a,s.up);const pr=prog(m,s,need);
+  const need=kind==='evo'?evoNeed(a,s.st):upNeed(a,s.up);const pr=prog(m,s,need,a[1]);
   if(!need||!pr||!pr.ok){toast('Not enough resources');return}
   const txt=need.map(([k,n])=>n+' '+RESN[k]).join(', ');
   if(!confirm((kind==='evo'?'Evolve ':'Upgrade ')+a[0]+'? This spends: '+txt))return;
-  need.forEach(([k,n])=>{if(k==='shards')s.s=nz(s.s)-n;else m.inv[k]=nz(m.inv[k])-n});
+  need.forEach(([k,n])=>{if(k==='shards')spendPilotShards(m,s,a,n);else m.inv[k]=nz(m.inv[k])-n});
   if(kind==='evo')s.st+=1;else s.up+=1;
   save();render();
 }
@@ -1932,10 +1953,22 @@ document.addEventListener('click',e=>{
   if(t.dataset.pmsfil){pmsFil=t.dataset.pmsfil;render();return}
   if(t.dataset.pmsdo){pmsAct(t.dataset.pmsdo);return}
   if(t.dataset.pmsuse){
-    const a=PILOTS.find(x=>x[0]===pmsSel);if(!a)return;const m=getPms(pmsPid),s=pst(m,a),key='sel'+a[1];
-    const q=document.getElementById('pmsUseQty'),want=q&&q.value!==''?Math.floor(+q.value):nz(m.inv[key]),n=Math.min(want||0,nz(m.inv[key]));
-    if(n<=0){toast('Enter a quantity');return}
-    m.inv[key]=nz(m.inv[key])-n;s.s=nz(s.s)+n;save();render();return}
+    const a=PILOTS.find(x=>x[0]===pmsSel);if(!a||a[1]!=='SR')return;
+    const m=getPms(pmsPid),s=pst(m,a),q=document.getElementById('pmsUseQty');
+    const available=nz(m.inv.selSR)+nz(m.inv.srChest)*5;
+    const want=q&&q.value!==''?Math.floor(+q.value):available;
+    if(!Number.isFinite(want)||want<=0){toast('Enter a valid shard quantity');return}
+    if(want>available){toast('Only '+available+' SR selectable shards are available');return}
+    const n=want;
+    const fromLoose=Math.min(n,nz(m.inv.selSR));m.inv.selSR=nz(m.inv.selSR)-fromLoose;
+    const remaining=n-fromLoose;
+    if(remaining>0){
+      const chests=Math.ceil(remaining/5);
+      if(chests>nz(m.inv.srChest)){toast('Not enough SR selectable chests');return}
+      m.inv.srChest=nz(m.inv.srChest)-chests;
+      m.inv.selSR=nz(m.inv.selSR)+(chests*5-remaining);
+    }
+    s.s=nz(s.s)+n;save();render();return}
   if(t.dataset.rw){const [id,tier]=t.dataset.rw.split('|');const p=P(id);p.rewards[tier]=!p.rewards[tier];save();render();return}
   if(t.dataset.ptile){const id=t.dataset.ptile;tgSel=tgSel===id?'':id;render();return}
   if(t.dataset.tnone){tgSel='';render();return}

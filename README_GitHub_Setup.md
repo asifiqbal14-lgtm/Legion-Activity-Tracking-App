@@ -1,10 +1,10 @@
-# Legion Tracker B9 — GitHub Pages PWA package
+# Legion Tracker B10 — GitHub Pages PWA package
 
 This package contains the tracker website, modern game-style app icons, PWA manifest, service worker, and installation guidance.
 
-## IMPORTANT: Upload the FILES inside this extracted folder
+## IMPORTANT: Upload the extracted FILES, not the ZIP
 
-Do not upload the enclosing folder as one nested directory. Open this folder, select every file inside it, and upload those files to the **root** of your GitHub repository. Your repository root should look like:
+The ZIP contains the app files directly at its top level. After extracting, select all 10 files in the destination folder and upload them to the **root** of your existing GitHub repository. Do not create a nested folder in the repository. Your repository root should look like:
 
 ```
 index.html
@@ -49,7 +49,7 @@ Open the HTTPS Pages URL in Safari → Share → Add to Home Screen → Add.
 - Open the page in Chrome, not an in-app browser.
 - Check GitHub **Actions** or **Settings → Pages** and wait until deployment succeeds.
 - In Chrome, open the Pages URL again, refresh, and allow it to load online once.
-- If an old version is cached, close the site and reopen it. The B9 service worker uses a new cache name.
+- If an old version is cached, close the site and reopen it. The B10 service worker uses a new cache name.
 
 ## Replacing an existing tracker
 
@@ -63,4 +63,14 @@ Open the HTTPS Pages URL in Safari → Share → Add to Home Screen → Add.
 Tracker records are stored locally in the browser on each device. GitHub Pages does not synchronize those records between users or devices automatically.
 
 
-B9 visual update: Daily Tasks buttons now use bold black labels and the Daily Tasks columns use more vibrant colors. These styles are scoped to the Daily Tasks tab only; other tabs are unchanged.
+Carried forward from B9: Daily Tasks buttons use bold black labels and the Daily Tasks columns use more vibrant colors. These styles are scoped to the Daily Tasks tab only; other tabs are unchanged.
+
+
+## B10 Pilot Management changes
+
+- Removed the duplicate **Selectable Pilot Shards** inventory card. Golden, Purple, and Blue Pieces remain in the Pieces card.
+- Added **SR Selectable Shard Chests** below Pilot Badges. Enter the number of unopened chests; each chest supplies 5 selectable SR pilot shards.
+- SR pilot evolve readiness counts the pilot's own shards plus loose SR selectable shards plus unopened chests × 5.
+- When applying selectable shards to an SR pilot, the tracker consumes loose shards first, then the required whole chests. Any unused shards from the last chest are kept as loose SR selectable shards.
+- SR and R pilot upgrades from Level 6 to Level 7 both require 200 Advanced Training Guides.
+- Existing player data and legacy selectable-shard values are preserved; the new chest field is added automatically to each player's PMS inventory.
