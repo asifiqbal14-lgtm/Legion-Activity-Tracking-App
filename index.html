@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Legion Tracker — B10 Pilot Management Update</title>
+<title>Legion Tracker — B11 Pilot Management Update</title>
 <link rel="manifest" href="./legion-manifest.json">
 <meta name="theme-color" content="#1d4ed8">
 <link rel="icon" href="legion-icon-192.png">
@@ -202,6 +202,42 @@ td input.icn{width:56px;text-align:center}
   .hint{display:none}
   body.typing header,body.typing nav,body.typing .banner{display:none}
 }
+
+/* B11 shop tile readability and responsive shop-name wrapping */
+#view .igroups .igroup{align-items:stretch}
+#view .igroups .itile{
+  width:108px;min-width:100px;min-height:108px;
+  padding:8px 6px;background:linear-gradient(150deg,#1d2b43 0%,#0c1422 100%);
+  color:#f8fafc;justify-content:flex-start;
+}
+#view .igroups .itile .inm{
+  display:block;width:100%;min-width:0;
+  color:#fff!important;font-size:13px;font-weight:900;line-height:1.2;
+  white-space:normal;overflow-wrap:anywhere;word-break:normal;
+  text-shadow:0 1px 2px rgba(0,0,0,.9);
+}
+#view .igroups .itile .itot{margin-top:auto;font-size:16px;font-weight:900}
+#view .igroups .stile.sm{
+  width:112px;min-width:100px;flex:0 1 112px;
+  min-height:108px;padding:7px 7px 8px;
+}
+#view .igroups .stile.sm .trow{
+  display:flex;width:100%;min-width:0;gap:5px;align-items:flex-start;
+}
+#view .igroups .stile.sm .shop-mini-icon{flex:0 0 20px;width:20px}
+#view .igroups .stile.sm .cbx{flex:0 0 16px}
+#view .igroups .stile.sm .ttl{
+  display:block;flex:1 1 0;min-width:0;max-width:100%;
+  font-size:12px!important;font-weight:900;line-height:1.16;
+  white-space:normal;overflow-wrap:anywhere;word-break:break-word;
+  text-overflow:clip;overflow:visible;
+}
+@media(max-width:420px){
+  #view .igroups .stile.sm{width:104px;flex-basis:104px;min-width:96px}
+  #view .igroups .itile{width:100px;min-width:94px}
+  #view .igroups .stile.sm .ttl{font-size:11.5px!important}
+}
+
 </style>
 
 <style id="premium-card-overrides">
@@ -1281,7 +1317,6 @@ function selInfo(p){
 }
 function buyBar(p){
   const si=selInfo(p);if(!si)sel='';
-  const log=p.log||[],last=log[log.length-1];
   let h='<div class="buybar">';
   if(si){
     selPk=Math.max(1,Math.min(si.c.packs,selPk));
@@ -1291,7 +1326,6 @@ function buyBar(p){
     <div>= <b>${fmt(selPk*si.c.q)}</b> ${selPk*si.c.q===1?'item':'items'} for <b>${fmt(selPk*si.c.cost)}</b> pts</div>
     <div class="bbbtns"><button class="buy" data-buy="1">✅ Purchase</button><button data-cancelsel="1">✕</button></div></div>`;
   }else h+='<span class="cnt">👆 Tap an item tile to select it, then press Purchase.</span>';
-  if(last)h+=`<div class="bblast cnt">Last purchase: ${fmt(last.units)} × ${esc(last.name)} (${fmt(last.cost)} pts) <button data-undo="1">↩ Undo</button></div>`;
   return h+'</div>';
 }
 const ICON_RULES=[[['main gun'],'🔫','#ef4444'],[['wing gun'],'✈️','#3b82f6'],[['missile'],'🚀','#f97316'],[['armor','armour','shield'],'🛡️','#22c55e'],[['badge'],'🎖️','#eab308'],[['drone'],'🛰️','#2dd4bf'],[['pilot'],'🪖','#38bdf8'],[['alloy','plate'],'🔩','#94a3b8'],[['chip'],'💾','#f472b6'],[['rhenite','rare earth'],'🪨','#d4a017'],[['technology'],'🔬','#06b6d4'],[['shard'],'💎','#a78bfa'],[['gun'],'🔫','#ef4444'],[['coin','gold','cash'],'🪙','#facc15']];
@@ -1340,18 +1374,7 @@ function doBuy(){
   const pts=+((p.points||{})[si.sh.id])||0;
   p.points[si.sh.id]=Math.round((pts-cost)*100)/100;
   const k=bkey(si.sh,si.it);if(!p.bought)p.bought={};p.bought[k]=(+p.bought[k]||0)+units;
-  if(!p.log)p.log=[];p.log.push({shop:si.sh.id,item:si.it.id,name:si.it.name,units,cost,t:Date.now()});
-  if(p.log.length>100)p.log.shift();
   sel='';selPk=1;save();render();
-}
-function undoBuy(){
-  const p=P(canPid);if(!p||!p.log||!p.log.length)return;
-  const l=p.log[p.log.length-1];
-  if(!confirm('Undo the last purchase? '+fmt(l.cost)+' points are given back and '+fmt(l.units)+' × '+l.name+' returns to stock.'))return;
-  p.log.pop();
-  p.points[l.shop]=Math.round(((+p.points[l.shop]||0)+l.cost)*100)/100;
-  const k=l.shop+'|'+l.item;if(p.bought&&p.bought[k]!=null)p.bought[k]=Math.max(0,p.bought[k]-l.units);
-  save();render();
 }
 function newMonth(){
   if(!confirm('Start a new month? Shops restock: every player\'s "bought this month" counts are reset. Points are not touched.'))return;
@@ -1985,7 +2008,6 @@ document.addEventListener('click',e=>{
   if(t.dataset.selpk){selPk+=+t.dataset.selpk;refreshCan();return}
   if(t.dataset.cancelsel){sel='';refreshCan();return}
   if(t.dataset.buy){doBuy();return}
-  if(t.dataset.undo){undoBuy();return}
   if(t.dataset.newmonth){newMonth();return}
   if(t.dataset.sub){shopView=t.dataset.sub;render();return}
   if(t.dataset.shopsel){shopSel=t.dataset.shopsel;render();return}
@@ -2059,17 +2081,61 @@ document.addEventListener('focusin',e=>{
   if(el.tagName==='INPUT'){const v0=el.value;const sel=()=>{if(document.activeElement===el&&el.value===v0){try{el.select()}catch(_){}}};setTimeout(sel,0);setTimeout(sel,120)}
   setTimeout(()=>{try{el.scrollIntoView({block:'center',inline:'nearest'})}catch(_){}},350);
 });
-/* Enter / keyboard action button: go to the box BELOW (same column), not to the right */
+/* B11 keyboard navigation:
+   - Players & Power: move right across the current player's editable fields, then down to the next player.
+   - Shops & Resources and other tables: move down in the same column; Shops wraps to the first field in that column.
+*/
 document.addEventListener('keydown',e=>{
   const el=e.target;
-  if((e.key!=='Enter'&&e.keyCode!==13)||el.tagName!=='INPUT')return;
+  if((e.key!=='Enter'&&e.keyCode!==13)||el.tagName!=='INPUT'||e.isComposing)return;
+  if(!el.closest('#view'))return;
   e.preventDefault();
+
   if(el.dataset.rank){el.blur();return}
-  const td=el.closest('td');const tr=td&&td.parentElement;if(!tr){el.blur();return}
-  const idx=[...tr.children].indexOf(td);
-  const next=e.shiftKey?tr.previousElementSibling:tr.nextElementSibling;
-  const target=next&&next.children[idx]&&next.children[idx].querySelector('input:not([data-rank]),select');
-  if(target)target.focus();else el.blur();
+
+  if(tab==='players'){
+    const tr=el.closest('tr');
+    if(tr){
+      const rowInputs=[...tr.querySelectorAll('input:not([data-rank])')].filter(x=>!x.disabled);
+      const idx=rowInputs.indexOf(el);
+      if(idx>=0){
+        let target=rowInputs[idx+1]||null;
+        if(!target){
+          let nextRow=tr.nextElementSibling;
+          while(nextRow&&!nextRow.querySelector('input:not([data-rank])'))nextRow=nextRow.nextElementSibling;
+          target=nextRow&&nextRow.querySelector('input:not([data-rank])');
+        }
+        if(target){target.focus();return}
+        el.blur();return;
+      }
+    }
+  }
+
+  const td=el.closest('td'),tr=td&&td.parentElement;
+  const tableBody=tr&&tr.parentElement;
+  if(!td||!tr||!tableBody){el.blur();return}
+  const col=[...tr.children].indexOf(td);
+  const rows=[...tableBody.querySelectorAll(':scope > tr')];
+  const rowIndex=rows.indexOf(tr);
+  const findInput=row=>{
+    const cell=row&&row.children[col];
+    return cell&&cell.querySelector('input:not([data-rank]),select:not([disabled])');
+  };
+
+  let target=null;
+  if(e.shiftKey){
+    for(let i=rowIndex-1;i>=0&&!target;i--)target=findInput(rows[i]);
+    if(!target&&tab==='shops'){
+      for(let i=rows.length-1;i>rowIndex&&!target;i--)target=findInput(rows[i]);
+    }
+  }else{
+    for(let i=rowIndex+1;i<rows.length&&!target;i++)target=findInput(rows[i]);
+    if(!target&&tab==='shops'){
+      for(let i=0;i<rowIndex&&!target;i++)target=findInput(rows[i]);
+    }
+  }
+  if(target){target.focus();return}
+  el.blur();
 });
 document.addEventListener('focusout',()=>{
   clearTimeout(typT);

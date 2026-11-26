@@ -1,4 +1,4 @@
-const CACHE_NAME = 'legion-tracker-b10-shell-v1';
+const CACHE_NAME = 'legion-tracker-b11-shell-v1';
 const APP_SHELL = [
   './', './index.html', './legion-manifest.json',
   './legion-icon-192.png', './legion-icon-512.png',
