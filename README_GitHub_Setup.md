@@ -1,15 +1,17 @@
-# Legion Tracker B11 — GitHub Pages PWA package
+# Legion Tracker B12 — GitHub Pages PWA package
 
 This package includes the updated Legion Tracker app, existing game-style icons, PWA manifest, service worker, and setup instructions.
 
-## What's updated in B11
+## What's updated in B12
 
-- Improved readability of item names in Shop & Resources tiles.
-- Shop names wrap inside their tiles instead of overflowing.
-- Removed the Last Purchase history strip and Undo button.
-- Shop & Resources table entry: Enter moves down within the same column and wraps to the first entry in that column at the end.
-- Players & Power entry: Enter moves right across the current player's editable fields, then to the first field of the next player.
-- Existing local-storage key and tracker data model are retained.
+- Added a Pilot Focus box immediately after the player filter.
+- Added a category-grouped pilot dropdown in SSR, SR, R, N order, with alphabetical pilot names in each category.
+- Pilot Focus shows each pilot's current Stars and Upgrade status, editable dropdowns, basic attributes, and passive skill highlighted in purple.
+- Added a Hide/Show control for Pilot Badges, Pieces, and Training Guides inventory cards; the preference is remembered on that device.
+- Added the supplied SSR unlock, evolution, and upgrade criteria. Unknown SSR 4-star and 9th/10th upgrade requirements remain explicitly marked as not provided and are not guessed.
+- Added the supplied N Pilot evolution and upgrade criteria. N Pilot Awakening cost remains marked as not provided.
+- Changed completed Done checklist buttons to a dark tone with white text; Not Done cross buttons are unchanged.
+- Existing B11 shop tile, keyboard navigation, install support, themes, and app data model are retained.
 
 ## Upload the extracted files
 
@@ -37,15 +39,11 @@ README_GitHub_Setup.md
 5. Replace matching files when prompted and add new files.
 6. Commit the changes to the branch used by GitHub Pages, normally `main`.
 7. Wait for GitHub Pages deployment to complete.
-8. Open the published HTTPS website and refresh it.
-
-## Refresh an installed app
-
-The service-worker cache name has been changed to B11. After deployment, open the website once while connected to the internet, refresh, then close and reopen the installed app. If the previous interface remains visible, clear the site's cached data in Chrome and reopen the published HTTPS URL.
+8. Open the published HTTPS website once while connected to the internet, then close and reopen the installed app.
 
 ## Data safety
 
-B11 keeps the existing tracker storage key and data structure. Nevertheless, export a JSON backup before replacing the deployed app.
+B12 retains the existing `legionTrackerV1` local-storage key and does not intentionally reset existing player or PMS records. Export a JSON backup before replacing the deployed app.
 
 ## PWA installation
 

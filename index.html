@@ -832,6 +832,59 @@ html[data-theme] .theme-menu button.selected{background:var(--accent)!important;
 .install-help-note{font-size:12px;color:var(--muted);background:var(--panel2);padding:10px;border-radius:10px}
 .install-help-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
 @media(max-width:700px){.install-help-card{padding:16px}.install-app-btn{padding:7px 10px!important;font-size:12px!important}}
+
+
+/* B12: PMS Pilot Focus, collapsible inventory, and completed-button contrast */
+.tg.on{
+  border-color:#263445!important;
+  background:linear-gradient(145deg,#25364b,#172536)!important;
+  color:#fff!important;
+  text-shadow:0 1px 1px rgba(0,0,0,.35);
+}
+.pms-focus-shell{
+  background:var(--panel);
+  border:2px solid #8b5cf6;
+  border-radius:14px;
+  padding:12px;
+  margin:0 0 12px;
+  box-shadow:0 4px 14px rgba(109,40,217,.10);
+}
+.pms-focus-heading{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;flex-wrap:wrap;margin-bottom:9px;
+}
+.pms-focus-heading strong{font-size:16px}
+.pms-focus-heading select{width:min(100%,390px);min-width:220px;font-weight:700}
+.pms-focus-empty{
+  border:1px dashed #8b5cf6;border-radius:10px;padding:13px;
+  background:rgba(124,58,237,.07);color:var(--muted);font-size:13px;
+}
+.pms-pilot-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.pms-attr-chip,.pms-skill-chip{
+  display:inline-flex;align-items:center;max-width:100%;border-radius:9px;
+  padding:7px 10px;font-size:12.5px;line-height:1.35;font-weight:800;
+  white-space:normal;overflow-wrap:anywhere;
+}
+.pms-attr-chip{background:#6d28d9;color:#fff;border:1px solid #8b5cf6}
+.pms-skill-chip{background:linear-gradient(135deg,#4c1d95,#6d28d9);color:#fff;border:1px solid #a78bfa}
+.pms-status-controls{display:flex;align-items:end;gap:7px;flex-wrap:wrap}
+.pms-status-controls label{display:flex;flex-direction:column;gap:3px;font-size:11px;font-weight:800;color:var(--muted)}
+.pms-status-controls select{min-width:92px;width:auto}
+.pms-current-status{display:flex;gap:8px;flex-wrap:wrap;margin:9px 0}
+.pms-current-status span{display:inline-flex;gap:5px;align-items:center;padding:5px 9px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);font-size:12px;font-weight:800}
+.pms-criteria-pending{margin-top:7px;padding:8px 10px;border-radius:8px;background:rgba(245,158,11,.10);border:1px solid rgba(245,158,11,.45);color:var(--text);font-size:12px;font-weight:700}
+.pms-inv-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+.pms-inv-toolbar strong{font-size:14px}
+.pms-inv-toolbar button{font-weight:800}
+.pms-inv[hidden]{display:none!important}
+@media(max-width:600px){
+ .pms-focus-heading{align-items:stretch}
+ .pms-focus-heading select{width:100%;min-width:0}
+ .pms-status-controls{width:100%}
+ .pms-status-controls label{flex:1;min-width:105px}
+ .pms-status-controls select{width:100%}
+}
+
 </style>
 
 </head>
@@ -1423,14 +1476,20 @@ const PILOTS=[["Achilles","N","ED+PDB","Attack On Strong Foes Increase",0,6,5],[
 const GUIDE=[['gBasic','Basic'],['gStd','Standard'],['gAdv','Advanced'],['gExp','Expert']];
 const EVO={
  SR:{unlock:{shards:40},steps:[{badges:40},{badges:80},{badges:160,shards:60},{badges:300,shards:120},{badges:500,shards:180,purple:200},{badges:1200,shards:240,purple:400},{badges:1800,gold:800,purple:800,blue:1200}]},
- R:{unlock:{shards:30},steps:[{badges:30},{badges:60},{badges:120,shards:45},{badges:180,shards:90},{badges:300,shards:135,blue:200},{badges:900,shards:180,blue:400},{badges:1350,purple:900,blue:800}]}
+ R:{unlock:{shards:30},steps:[{badges:30},{badges:60},{badges:120,shards:45},{badges:180,shards:90},{badges:300,shards:135,blue:200},{badges:900,shards:180,blue:400},{badges:1350,purple:900,blue:800}]},
+ SSR:{unlock:{shards:50},steps:[{badges:50},{badges:100},{badges:200,shards:75}]},
+ N:{steps:[{badges:20},{badges:40},{badges:80,shards:30},{badges:120,shards:60},{badges:200,shards:90},{badges:600,shards:120}]}
 };
 const UPG={
  SR:[['gBasic',50],['gBasic',100],['gStd',50],['gStd',100],['gAdv',50],['gAdv',100],['gAdv',200],['gExp',100],['gExp',125],['gExp',150]],
- R:[['gBasic',50],['gBasic',100],['gStd',50],['gStd',100],['gAdv',50],['gAdv',100],['gAdv',200],['gExp',100],['gExp',125],['gExp',150]]
+ R:[['gBasic',50],['gBasic',100],['gStd',50],['gStd',100],['gAdv',50],['gAdv',100],['gAdv',200],['gExp',100],['gExp',125],['gExp',150]],
+ SSR:[['gBasic',50],['gBasic',100],['gStd',50],['gStd',100],['gAdv',50],['gAdv',100],['gAdv',200],['gExp',100]],
+ N:[['gBasic',50],['gBasic',100],['gStd',50],['gStd',100],['gAdv',50],['gAdv',100],['gExp',50],['gExp',100],['gExp',125],['gExp',150]]
 };
 const RESN={badges:'Pilot Badges',gold:'Golden Pieces',purple:'Purple Pieces',blue:'Blue Pieces',shards:'Pilot Shards',gBasic:'Basic Guides',gStd:'Standard Guides',gAdv:'Advanced Guides',gExp:'Expert Guides'};
 let pmsPid='',pmsSel='',pmsFil='ALL',pmsSort='evo',pmsQ='';
+let pmsInvHidden=false;
+try{pmsInvHidden=localStorage.getItem(KEY+'_pmsInvHidden')==='1'}catch(e){}
 const nz=v=>(+v||0);
 function getPms(pid){
   let m=S.pms[pid];
@@ -1444,12 +1503,20 @@ function getPms(pid){
   if(!m.p)m.p={};
   return m;
 }
-function pst(m,a){return m.p[a[0]]||(m.p[a[0]]={s:0,st:0,up:0})}
-function evoNeed(a,st){ // returns [[res,need]] or null (maxed / no data)
-  const E=EVO[a[1]];if(!E||st>=7)return null;
-  const o=st<0?E.unlock:E.steps[st];return Object.entries(o);
+function pst(m,a){
+  if(!m.p[a[0]])m.p[a[0]]={s:0,st:a[1]==='SSR'?-1:0,up:0};
+  const s=m.p[a[0]];
+  if(s.s==null)s.s=0;
+  if(s.st==null)s.st=a[1]==='SSR'?-1:0;
+  if(s.up==null)s.up=0;
+  return s;
 }
-function upNeed(a,up){const U=UPG[a[1]];if(!U||up>=10)return null;return [U[up]]}
+function evoNeed(a,st){ // returns [[res,need]] or null when criteria are not supplied / status is maxed
+  const E=EVO[a[1]];if(!E||st>=7)return null;
+  if(st<0){return E.unlock?Object.entries(E.unlock):null;}
+  const o=E.steps&&E.steps[st];return o?Object.entries(o):null;
+}
+function upNeed(a,up){const U=UPG[a[1]];if(!U||up>=10||!U[up])return null;return [U[up]]}
 function resHave(m,s,k,rarity){
   if(k!=='shards')return nz(m.inv[k]);
   const own=nz(s.s);
@@ -1483,38 +1550,70 @@ function needList(m,s,need,rarity){
   if(!need)return '<small>Nothing further to spend (maxed, or no cost data for this rarity).</small>';
   return need.map(([k,n])=>{const h=resHave(m,s,k,rarity),label=(k==='shards'&&rarity==='SR')?'Pilot Shards (owned + SR selectable)':RESN[k];return `<div class="need"><span>${label}</span><b class="${h>=n?'ok':'no'}">${h.toLocaleString()} / ${n.toLocaleString()}</b></div>`+pbar({pct:Math.min(1,h/n),ok:h>=n},'')}).join('');
 }
+function pmsFocusOptions(){
+  return ['SSR','SR','R','N'].map(rarity=>{
+    const list=PILOTS.filter(a=>a[1]===rarity).sort((a,b)=>a[0].localeCompare(b[0],undefined,{sensitivity:'base'}));
+    return `<optgroup label="${rarity} · ${list.length} pilots">${list.map(a=>`<option value="${esc(a[0])}" ${a[0]===pmsSel?'selected':''}>${esc(a[0])}</option>`).join('')}</optgroup>`;
+  }).join('');
+}
+function pmsMissingCriteria(a,s,kind){
+  if(kind==='evo'){
+    if(a[1]==='SSR'&&s.st>=3&&s.st<7)return `Next SSR evolution to ${s.st+1}★ is not configured yet. The 4★ requirement was not supplied.`;
+    if(a[1]==='N'&&s.st>=6&&s.st<7)return 'N Pilot Awakening requirement was not supplied yet.';
+    if(s.st>=7)return 'This pilot is already awakened.';
+    return 'Evolution criteria are not available for this status.';
+  }
+  if(a[1]==='SSR'&&s.up>=8&&s.up<10)return `SSR Upgrade ${s.up+1} requirement was not supplied yet.`;
+  if(s.up>=10)return 'This pilot is already at Upgrade 10.';
+  return 'Upgrade criteria are not available for this status.';
+}
 function pmsDetail(m){
-  const a=PILOTS.find(x=>x[0]===pmsSel);if(!a)return '<div id="pmsDet"></div>';
+  const a=PILOTS.find(x=>x[0]===pmsSel);
+  if(!a)return '<div id="pmsDet" class="pms-focus-empty">Choose a pilot from the category-wise list to view its Stars, Upgrade level, attributes, passive skill and resource requirements.</div>';
   const s=pst(m,a),en=evoNeed(a,s.st),un=upNeed(a,s.up),ep=prog(m,s,en,a[1]),up=prog(m,s,un,a[1]);
   const sel=a[1]==='SR'?(nz(m.inv.selSR)+nz(m.inv.srChest)*5):nz(m.inv['sel'+a[1]]);
   const stOpts=[-1,0,1,2,3,4,5,6,7].map(v=>`<option value="${v}" ${v===s.st?'selected':''}>${v<0?'🔒 Locked':v>=7?'🌟 Awakened':v+' ★'}</option>`).join('');
   const lvOpts=[0,1,2,3,4,5,6,7,8,9,10].map(v=>`<option value="${v}" ${v===s.up?'selected':''}>Lv ${v}</option>`).join('');
   const evoLbl=en?(s.st<0?'Unlock':s.st>=6?'Awakening':'Evolve to '+(s.st+1)+' ★'):'';
-  return `<div id="pmsDet" class="pdet r-${a[1]}"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><div><b style="font-size:18px">${esc(a[0])}</b> <span class="rar" style="background:var(--bc)">${a[1]}</span><br><small style="color:var(--muted)">${esc(a[2])} · ${esc(a[3])}</small></div>
-   <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><select data-pmsst="${esc(a[0])}">${stOpts}</select><select data-pmslv="${esc(a[0])}">${lvOpts}</select><button data-pmsclose="1">✕ Close</button></div></div>
-   <div class="cols" style="margin-top:10px">
-    <div><b>⭐ Evolve${en?' – next: '+evoLbl:''}</b><div style="margin:4px 0">${starTxt(s.st)}</div>${needList(m,s,en,a[1])}
-      ${en?`<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn-accent" data-pmsdo="evo" ${ep&&ep.ok?'':'disabled'}>${evoLbl} now</button></div>`:''}</div>
-    <div><b>⬆ Upgrade${un?' – next: Lv '+(s.up+1):''}</b><div style="margin:4px 0">Level ${s.up} / 10</div>${needList(m,s,un,a[1])}
-      ${un?`<div style="margin-top:8px"><button class="btn-accent" data-pmsdo="upg" ${up&&up.ok?'':'disabled'}>Upgrade to Lv ${s.up+1} now</button></div>`:''}</div>
-   </div>
-   ${a[1]==='SR'?`<div style="margin-top:12px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)"><b>🧩 SR Selectable Shards</b><div style="margin:4px 0 8px"><small>Available: <b>${sel}</b> shards · ${nz(m.inv.selSR)} loose + ${nz(m.inv.srChest)} chests × 5</small></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><input id="pmsUseQty" data-num="1" type="text" inputmode="decimal" placeholder="shards to use" style="width:120px"><button data-pmsuse="1" ${sel>0?'':'disabled'}>Use SR shards → ${esc(a[0])}</button></div><small>Each chest supplies 5 shards. The calculator automatically includes unopened chests in SR evolve readiness.</small></div>`:''}
+  const evoBody=en?`${needList(m,s,en,a[1])}${ep&&ep.ok?`<div style="margin-top:8px"><button class="btn-accent" data-pmsdo="evo">${evoLbl} now</button></div>`:''}`:`<div class="pms-criteria-pending">${esc(pmsMissingCriteria(a,s,'evo'))}</div>`;
+  const upBody=un?`${needList(m,s,un,a[1])}${up&&up.ok?`<div style="margin-top:8px"><button class="btn-accent" data-pmsdo="upg">Upgrade to Lv ${s.up+1} now</button></div>`:''}`:`<div class="pms-criteria-pending">${esc(pmsMissingCriteria(a,s,'upg'))}</div>`;
+  return `<div id="pmsDet" class="pdet r-${a[1]}">
+    <div class="pms-focus-headrow">
+      <div><b style="font-size:19px">${esc(a[0])}</b> <span class="rar" style="background:var(--bc)">${a[1]}</span>
+        <div class="pms-pilot-meta"><span class="pms-attr-chip"><b>Basic Attributes · ${esc(a[2])}</b></span><span class="pms-skill-chip"><b>Passive Skill · ${esc(a[3])}</b></span></div>
+      </div>
+      <div class="pms-status-controls">
+        <label>Stars<select data-pmsst="${esc(a[0])}">${stOpts}</select></label>
+        <label>Upgrade<select data-pmslv="${esc(a[0])}">${lvOpts}</select></label>
+        <button data-pmsclose="1">✕ Clear focus</button>
+      </div>
+    </div>
+    <div class="pms-current-status"><span>⭐ Current Stars: ${starTxt(s.st)}</span><span>⬆ Current Upgrade: Lv ${s.up}/10</span><span>💎 Pilot Shards: ${nz(s.s)}</span></div>
+    <div class="cols" style="margin-top:10px">
+      <div><b>⭐ Evolve${en?' – next: '+evoLbl:''}</b><div style="margin:4px 0">${starTxt(s.st)}</div>${evoBody}</div>
+      <div><b>⬆ Upgrade${un?' – next: Lv '+(s.up+1):''}</b><div style="margin:4px 0">Level ${s.up} / 10</div>${upBody}</div>
+    </div>
+    ${a[1]==='SR'?`<div style="margin-top:12px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)"><b>🧩 SR Selectable Shards</b><div style="margin:4px 0 8px"><small>Available: <b>${sel}</b> shards · ${nz(m.inv.selSR)} loose + ${nz(m.inv.srChest)} chests × 5</small></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><input id="pmsUseQty" data-num="1" type="text" inputmode="decimal" placeholder="shards to use" style="width:120px"><button data-pmsuse="1" ${sel>0?'':'disabled'}>Use SR shards → ${esc(a[0])}</button></div><small>Each chest supplies 5 shards. The calculator automatically includes unopened chests in SR evolve readiness.</small></div>`:''}
    </div>`;
 }
 function vPms(){
   if(!S.players.some(p=>p.id===pmsPid))pmsPid=(S.players[0]||{}).id||'';
   const p=P(pmsPid);if(!p)return '<div class="calc">Add a player first.</div>';
   const m=getPms(pmsPid),I=(k,l)=>`<div class="irow"><span>${l}</span><input data-pms="inv|${k}" data-num="1" type="text" inputmode="decimal" value="${val(m.inv[k]||'')}" placeholder="0"></div>`;
-  let h=`<div class="calc"><b>Player:</b> <select id="pmsPlayer" style="min-width:170px">${S.players.map((q,i)=>`<option value="${q.id}" ${q.id===pmsPid?'selected':''}>#${i+1} ${esc(q.name)}</option>`).join('')}</select>
-   <span style="color:var(--muted);font-size:12.5px">Pilot shards & inventory below belong to this player only.</span></div>
-   <div class="pms-inv">
-    <div class="icard" style="--bc:#facc15"><h4>🎖 Pilot Badges & SR Selectable</h4>${I('badges','Badges')}${I('srChest','SR Selectable Shard Chests (5 shards each)')}</div>
+  let h=`<div class="calc pms-player-filter"><b>Player Filter:</b> <select id="pmsPlayer" style="min-width:170px">${S.players.map((q,i)=>`<option value="${q.id}" ${q.id===pmsPid?'selected':''}>#${i+1} ${esc(q.name)}</option>`).join('')}</select><span style="color:var(--muted);font-size:12.5px">Pilot status and inventory below belong to this player.</span></div>
+   <section class="pms-focus-shell">
+     <div class="pms-focus-heading"><strong>🎯 Pilot Focus</strong><select id="pmsFocus" aria-label="Select pilot by rarity and alphabetical name"><option value="">Select a pilot · SSR → SR → R → N</option>${pmsFocusOptions()}</select></div>
+     <div id="pmsDetBox">${pmsDetail(m)}</div>
+   </section>
+   <div class="pms-inv-toolbar"><strong>📦 Player Resource Inventory</strong><button type="button" data-pms-inv-toggle="1" aria-expanded="${!pmsInvHidden}">${pmsInvHidden?'＋ Show inventory boxes':'－ Hide inventory boxes'}</button></div>
+   <div class="pms-inv" ${pmsInvHidden?'hidden':''}>
+    <div class="icard" style="--bc:#facc15"><h4>🎖 Pilot Badges & SR Selectable</h4>${I('badges','Pilot Badges')}${I('srChest','SR Selectable Shard Chests (5 shards each)')}</div>
     <div class="icard" style="--bc:#c084fc"><h4>💎 Pieces</h4>${I('gold','🟡 Golden')}${I('purple','🟣 Purple')}${I('blue','🔵 Blue')}</div>
     <div class="icard" style="--bc:#4ade80"><h4>📘 Training Guides</h4>${GUIDE.map(g=>I(g[0],g[1])).join('')}</div>
    </div>
-   <div id="pmsTopBox">${pmsTop(m)}</div><div id="pmsDetBox">${pmsDetail(m)}</div>`;
+   <div id="pmsTopBox">${pmsTop(m)}</div>`;
   const fl=['ALL','SSR','SR','R','N'];
-  h+=`<div class="calc"><span class="pills">${fl.map(f=>`<button data-pmsfil="${f}" class="${f===pmsFil?'on':''}">${f==='ALL'?'All 86':f}</button>`).join('')}</span>
+  h+=`<div class="calc"><span class="pills">${fl.map(f=>`<button data-pmsfil="${f}" class="${f===pmsFil?'on':''}">${f==='ALL'?'All '+PILOTS.length:f}</button>`).join('')}</span>
    <select id="pmsSort"><option value="evo" ${pmsSort==='evo'?'selected':''}>Sort: nearest evolve</option><option value="upg" ${pmsSort==='upg'?'selected':''}>Sort: nearest upgrade</option><option value="name" ${pmsSort==='name'?'selected':''}>Sort: name</option><option value="sh" ${pmsSort==='sh'?'selected':''}>Sort: most shards</option></select>
    <input id="pmsQ" type="text" placeholder="Search pilot…" value="${esc(pmsQ)}" style="width:150px"></div>`;
   let rows=pmsRows(m).filter(r=>pmsFil==='ALL'||r.a[1]===pmsFil);
@@ -1971,6 +2070,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.all){const p=P(t.dataset.all);const allOn=DAILY.every(([k])=>p.daily[k]);DAILY.forEach(([k])=>p.daily[k]=!allOn);save();render();return}
   if(t.dataset.mv){const [id,d]=t.dataset.mv.split('|');movePlayer(id,S.players.indexOf(P(id))+ +d);return}
   if(t.dataset.allg){const [id,gi]=t.dataset.allg.split('|');const p=P(id),keys=DAILY_GROUPS[+gi].cols.map(c=>c[0]);const allOn=keys.every(k=>p.daily[k]);keys.forEach(k=>p.daily[k]=!allOn);save();render();return}
+  if(t.dataset.pmsInvToggle!==undefined){pmsInvHidden=!pmsInvHidden;try{localStorage.setItem(KEY+'_pmsInvHidden',pmsInvHidden?'1':'0')}catch(_){}render();return}
   if(t.dataset.pmssel){pmsSel=pmsSel===t.dataset.pmssel?'':t.dataset.pmssel;render();const d=document.getElementById('pmsDet');if(d)d.scrollIntoView({block:'start'});return}
   if(t.dataset.pmsclose){pmsSel='';render();return}
   if(t.dataset.pmsfil){pmsFil=t.dataset.pmsfil;render();return}
@@ -2155,6 +2255,7 @@ document.addEventListener('change',e=>{
   if(el.id==='eventMonth'){S.eventPlan.selectedMonth=el.value||todayStr().slice(0,7);save();render();return}
   if(el.dataset.eventEdit){const [id,k]=el.dataset.eventEdit.split('|'),ev=evFindEvent(id);if(ev){if(k==='name')ev.kind=inferEventKind(ev.name);if(k==='start'&&ev.start)ev.month=ev.start.slice(0,7);save();render()}return}
   if(el.id==='pmsPlayer'){pmsPid=el.value;pmsSel='';render();return}
+  if(el.id==='pmsFocus'){pmsSel=el.value||'';render();return}
   if(el.id==='pmsSort'){pmsSort=el.value;render();return}
   if(el.dataset&&(el.dataset.pmsst||el.dataset.pmslv)){
     const a=PILOTS.find(x=>x[0]===(el.dataset.pmsst||el.dataset.pmslv)),s=pst(getPms(pmsPid),a);
