@@ -1,8 +1,8 @@
-# Legion Tracker B12 — GitHub Pages PWA package
+# Legion Tracker B13 — GitHub Pages PWA package
 
 This package includes the updated Legion Tracker app, existing game-style icons, PWA manifest, service worker, and setup instructions.
 
-## What's updated in B12
+## What's updated in B13
 
 - Added a Pilot Focus box immediately after the player filter.
 - Added a category-grouped pilot dropdown in SSR, SR, R, N order, with alphabetical pilot names in each category.
@@ -43,7 +43,7 @@ README_GitHub_Setup.md
 
 ## Data safety
 
-B12 retains the existing `legionTrackerV1` local-storage key and does not intentionally reset existing player or PMS records. Export a JSON backup before replacing the deployed app.
+B13 retains the existing `legionTrackerV1` local-storage key and does not intentionally reset existing player or PMS records. Export a JSON backup before replacing the deployed app.
 
 ## PWA installation
 

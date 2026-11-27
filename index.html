@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Legion Tracker — B11 Pilot Management Update</title>
+<title>Legion Tracker — B13 SSR Unlock & Daily Button Contrast</title>
 <link rel="manifest" href="./legion-manifest.json">
 <meta name="theme-color" content="#1d4ed8">
 <link rel="icon" href="legion-icon-192.png">
@@ -708,15 +708,20 @@ main>*{flex:none}
 </style>
 
 
-<style id="daily-task-contrast-b9">
+<style id="daily-task-contrast-b13">
 
-/* B9 Daily Tasks-only readability: black, extra-bold button labels. */
-#view .daily-task-view .tg,
-#view .daily-task-view .tg.on {
+/* Daily Tasks: keep Not Done text black; make dark Done buttons white and extra-bold. */
+#view .daily-task-view .tg {
   color: #000000 !important;
   -webkit-text-fill-color: #000000 !important;
   font-weight: 900 !important;
   text-shadow: none !important;
+}
+#view .daily-task-view .tg.on {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-weight: 900 !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,.35) !important;
 }
 #view .daily-task-view .tg:focus-visible {
   outline: 3px solid var(--accent);
@@ -1496,7 +1501,7 @@ function getPms(pid){
   if(!m){
     m=S.pms[pid]={inv:{badges:0,gold:0,purple:0,blue:0,gBasic:0,gStd:0,gAdv:0,gExp:0,srChest:0,selSR:0,selR:0,selN:0},p:{}};
     const pl=P(pid);
-    if(pl&&/maverick/i.test(pl.name))PILOTS.forEach(a=>{m.p[a[0]]={s:a[4],st:a[5],up:a[6]}});
+    if(pl&&/maverick/i.test(pl.name))PILOTS.forEach(a=>{m.p[a[0]]={s:a[4],st:a[1]==='SSR'?-1:a[5],up:a[6]}});
   }
   if(!m.inv)m.inv={};
   Object.keys({badges:1,gold:1,purple:1,blue:1,gBasic:1,gStd:1,gAdv:1,gExp:1,srChest:1,selSR:1,selR:1,selN:1}).forEach(k=>{if(m.inv[k]==null)m.inv[k]=0});
@@ -1543,8 +1548,8 @@ function pmsTop(m){
   const rows=pmsRows(m);
   const mk=(key,title,cls)=>{
     const l=rows.filter(r=>r[key]).sort((x,y)=>(y[key].ok-x[key].ok)||(y[key].pct-x[key].pct)).slice(0,5);
-    return `<div class="icard" style="--bc:${key==='evo'?'#38bdf8':'#f472b6'}"><h4>${title}</h4>${l.length?l.map(r=>`<button class="r-${r.a[1]}" data-pmssel="${esc(r.a[0])}" style="border-color:var(--bc)"><b>${esc(r.a[0])}</b> <span class="rar">${r.a[1]}</span> <small style="display:inline">${key==='evo'?starTxt(r.s.st)+' → next':'Lv '+r.s.up+' → '+(r.s.up+1)}</small>${pbar(r[key],'',cls)}</button>`).join(''):'<small>No data</small>'}</div>`};
-  return `<div class="top5">${mk('evo','⭐ Closest to EVOLVE','')}${mk('upg','⬆ Closest to UPGRADE','up')}</div>`;
+    return `<div class="icard" style="--bc:${key==='evo'?'#38bdf8':'#f472b6'}"><h4>${title}</h4>${l.length?l.map(r=>`<button class="r-${r.a[1]}" data-pmssel="${esc(r.a[0])}" style="border-color:var(--bc)"><b>${esc(r.a[0])}</b> <span class="rar">${r.a[1]}</span> <small style="display:inline">${key==='evo'?(r.s.st<0?'🔒 Locked → Unlock':starTxt(r.s.st)+' → next'):'Lv '+r.s.up+' → '+(r.s.up+1)}</small>${pbar(r[key],'',cls)}</button>`).join(''):'<small>No data</small>'}</div>`};
+  return `<div class="top5">${mk('evo','⭐ Closest to EVOLVE / UNLOCK','')}${mk('upg','⬆ Closest to UPGRADE','up')}</div>`;
 }
 function needList(m,s,need,rarity){
   if(!need)return '<small>Nothing further to spend (maxed, or no cost data for this rarity).</small>';
@@ -1589,6 +1594,7 @@ function pmsDetail(m){
       </div>
     </div>
     <div class="pms-current-status"><span>⭐ Current Stars: ${starTxt(s.st)}</span><span>⬆ Current Upgrade: Lv ${s.up}/10</span><span>💎 Pilot Shards: ${nz(s.s)}</span></div>
+    ${a[1]==='SSR'&&s.st===0?`<div class="pms-criteria-pending" style="margin-top:8px">SSR unlock reminder: this record is currently set to 0★ (already unlocked). If this pilot is still locked, change Stars to 🔒 Locked. The unlock requirement is 50 shards of this specific pilot.</div>`:''}
     <div class="cols" style="margin-top:10px">
       <div><b>⭐ Evolve${en?' – next: '+evoLbl:''}</b><div style="margin:4px 0">${starTxt(s.st)}</div>${evoBody}</div>
       <div><b>⬆ Upgrade${un?' – next: Lv '+(s.up+1):''}</b><div style="margin:4px 0">Level ${s.up} / 10</div>${upBody}</div>
